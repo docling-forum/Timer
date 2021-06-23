@@ -1,0 +1,80 @@
+<html>
+    <script>
+        /**
+ * Self-adjusting interval to account for drifting
+ * 
+ * @param {function} workFunc  Callback containing the work to be done
+ *                             for each interval
+ * @param {int}      interval  Interval speed (in milliseconds) - This 
+ * @param {function} errorFunc (Optional) Callback to run if the drift
+ *                             exceeds interval
+ */
+function AdjustingInterval(workFunc, interval, errorFunc) {
+    var that = this;
+    var expected, timeout;
+    this.interval = interval;
+
+    this.start = function() {
+        expected = Date.now() + this.interval;
+        timeout = setTimeout(step, this.interval);
+    }
+
+    this.stop = function() {
+        clearTimeout(timeout);
+    }
+
+    function step() {
+        var drift = Date.now() - expected;
+        if (drift > that.interval) {
+            // You could have some default stuff here too...
+            if (errorFunc) errorFunc();
+        }
+        workFunc();
+        expected += that.interval;
+        timeout = setTimeout(step, Math.max(0, that.interval-drift));
+    }
+}
+// For testing purposes, we'll just increment
+// this and send it out to the console.
+var justSomeNumber = 0;
+
+// Define the work to be done
+var doWork = function() {
+    //console.log(++justSomeNumber);
+    document.getElementById("milisec").innerHTML = parseInt(document.getElementById("milisec").innerHTML) + 10;
+    if (document.getElementById("milisec").innerHTML > 1000) {
+        document.getElementById("milisec").innerHTML = 0;
+        ++document.getElementById("sec").innerHTML;
+        }
+
+        if (document.getElementById("sec").innerHTML == 60) {
+            ++document.getElementById("min").innerHTML;
+            document.getElementById("sec").innerHTML = 0;
+        }
+
+        if (document.getElementById("min").innerHTML == 60) {
+            document.getElementById("min").innerHTML = 0;
+            ++document.getElementById("hour").innerHTML;
+
+        }
+};
+
+// Define what to do if something goes wrong
+var doError = function() {
+    console.warn('The drift exceeded the interval.');
+};
+
+// (The third argument is optional)
+var ticker = new AdjustingInterval(doWork, 10, doError);
+</script>
+<body>
+    <h1>
+        <span id="hour">00</span> :
+        <span id="min">00</span> :
+        <span id="sec">00</span> :
+        <span id="milisec">00</span>
+        </h1>
+        <p>
+    <button onclick="ticker.start()" id="start">Start</button>
+    <button onclick="ticker.stop()" id="start">Stop</button>
+</body>
