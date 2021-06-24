@@ -58,11 +58,8 @@ var justSomeNumber = 0;
 // Define the work to be done
 var doWork = function() {
     //console.log(++justSomeNumber);
-    document.getElementById("milisec").innerHTML = parseInt(document.getElementById("milisec").innerHTML) + 10;
-    if (document.getElementById("milisec").innerHTML > 1000) {
-        document.getElementById("milisec").innerHTML = 0;
-        ++document.getElementById("sec").innerHTML;
-        }
+    ++document.getElementById("sec").innerHTML;
+    
 
         if (document.getElementById("sec").innerHTML == 60) {
             ++document.getElementById("min").innerHTML;
@@ -82,7 +79,7 @@ var doError = function() {
 };
 
 // (The third argument is optional)
-var ticker = new AdjustingInterval(doWork, 10, doError);
+var ticker = new AdjustingInterval(doWork, 1000, doError);
 
 function calc_drift(arr){
   // Calculate drift correction.
@@ -117,7 +114,7 @@ function calc_drift(arr){
         <span id="hour">00</span> :
         <span id="min">00</span> :
         <span id="sec">00</span> :
-        <span id="milisec">00</span>
+        
         </h1>
         <p>
     <button onclick="ticker.start()" id="start">Start</button>
